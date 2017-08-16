@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tasks</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.min.js"></script>
+</head>
+<body>
+    <div class="tasks-list">
+
+    </div>
+    <div class="new-task">
+        <input type="text" class="new-task__title">
+        <button class="new-task__create-btn">Create</button>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            var $tasksListEl = $('.tasks-list');
+            var $newTaskTitleEl = $('.new-task__title');
+
+{#            const ReconnectingWebSocket = require('reconnecting-websocket');#}
+            const webSocket = new ReconnectingWebSocket('ws://' + window.location.host + '/tasks/');
+{#            var webSocket = new WebSocket('ws://' + window.location.host + '/tasks/');#}
+            webSocket.onmessage = function(message) {
+                var data = JSON.parse(message.data);
+                $tasksListEl.append('<p><strong>Reporter: '+ data.sender + '</strong>: ' + data.title + '</p>');
+            };
+
+            $('.new-task__create-btn').click(function(e) {
+                var task_title = $newTaskTitleEl.val();
+                webSocket.send(task_title);
+            });
+        });
+    </script>
+</body>
+</html>
